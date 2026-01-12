@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中医理论 | 阴阳五行与脏腑经络学说</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 理论页面特有样式 */
+        .theory-header {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/theory.jpeg');
+            background-size: cover;
+            background-position: center 30%;
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+        
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #2a6e3f, #4CAF50);
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+            width: 45%;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+        
+        .timeline-item:nth-child(even) {
+            left: 55%;
+        }
+        
+        .timeline-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-top: 5px solid #2a6e3f;
+        }
+        
+        .timeline-content h3 {
+            color: #2a6e3f;
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .timeline-content h3 i {
+            font-size: 1.4rem;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content:before {
+            content: '';
+            position: absolute;
+            right: -15px;
+            top: 20px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid white;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content:before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 20px;
+            width: 0;
+            height: 0;
+            border-right: 15px solid white;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #2a6e3f;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 0 4px #2a6e3f;
+        }
+        
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .concept-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .concept-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .concept-icon {
+            font-size: 3.5rem;
+            color: #2a6e3f;
+            margin-bottom: 1.5rem;
+        }
+        
+        .concept-card h4 {
+            color: #2a6e3f;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .diagram-container {
+            text-align: center;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+            border-radius: 15px;
+        }
+        
+        .diagram {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .diagram-item {
+            text-align: center;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            min-width: 150px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .diagram-item span {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2a6e3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .timeline:before {
+                left: 20px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                left: 0 !important;
+                padding-left: 50px;
+            }
+            
+            .timeline-item:nth-child(odd) .timeline-content:before,
+            .timeline-item:nth-child(even) .timeline-content:before {
+                left: -15px;
+                right: auto;
+                border-left: 15px solid transparent;
+                border-right: 15px solid white;
+                border-top: 15px solid transparent;
+                border-bottom: 15px solid transparent;
+            }
+            
+            .timeline-dot {
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-leaf"></i>
+                中医养生
+            </a>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="theory.html" class="active"><i class="fas fa-book-open"></i> 中医理论</a></li>
+                <li><a href="herbs.html"><i class="fas fa-leaf"></i> 中草药</a></li>
+                <li><a href="acupuncture.html"><i class="fas fa-dot-circle"></i> 经络穴位</a></li>
+                <li><a href="diet.html"><i class="fas fa-utensils"></i> 食疗养生</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <header class="page-header theory-header">
+        <div>
+            <h1>中医基础理论</h1>
+            <p>阴阳五行 · 脏腑经络 · 气血津液 · 整体观念</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 核心理论介绍 -->
+        <section class="content-section">
+            <h2>中医哲学基础</h2>
+            <p>中医理论体系形成于中国古代，深受道家、儒家思想影响，以阴阳五行学说为核心，强调整体观念和辨证论治。其理论体系包括阴阳学说、五行学说、藏象学说、经络学说、气血津液学说等。</p>
+            
+            <div class="highlight">
+                <p><strong>核心思想：</strong>中医认为人体是一个有机整体，与自然界和社会环境密切相关。健康是阴阳平衡的状态，疾病是阴阳失调的表现。</p>
+            </div>
+            
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <div class="concept-icon">
+                        <i class="fas fa-yin-yang"></i>
+                    </div>
+                    <h4>阴阳学说</h4>
+                    <p>阴阳代表自然界中相互对立又统一的两种属性，是中医理论的基础。</p>
+                </div>
+                
+                <div class="concept-card">
+                    <div class="concept-icon">
+                        <i class="fas fa-shapes"></i>
+                    </div>
+                    <h4>五行学说</h4>
+                    <p>金木水火土五种元素相生相克，构成物质世界的基本运行规律。</p>
+                </div>
+                
+                <div class="concept-card">
+                    <div class="concept-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h4>藏象学说</h4>
+                    <p>研究人体脏腑生理功能、病理变化及相互关系。</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 阴阳学说 -->
+        <section class="content-section">
+            <h2><i class="fas fa-yin-yang"></i> 阴阳学说</h2>
+            
+            <div class="img-container">
+                <img src="images/yinyang.png" 
+                     alt="阴阳平衡" 
+                     class="responsive-img">
+                <p class="img-caption">阴阳平衡是中医养生的核心理念</p>
+            </div>
+            
+            <h3>一、阴阳的基本概念</h3>
+            <p>阴阳是中国古代哲学的基本概念，源于对自然现象的观察。阴阳代表自然界中相互对立又相互关联的两种属性：</p>
+            
+            <ul>
+                <li><strong>阳的属性：</strong>太阳、白天、温暖、运动、上升、外向、兴奋、功能</li>
+                <li><strong>阴的属性：</strong>月亮、夜晚、寒冷、静止、下降、内向、抑制、物质</li>
+            </ul>
+            
+            <h3>二、阴阳之间的关系</h3>
+            <p>阴阳之间存在着相互对立、相互依存、相互消长、相互转化的关系：</p>
+            
+            <div class="diagram-container">
+                <h4>阴阳关系示意图</h4>
+                <div class="diagram">
+                    <div class="diagram-item">
+                        <span>对立</span>
+                        <p>阴阳相互制约</p>
+                    </div>
+                    <div class="diagram-item">
+                        <span>互根</span>
+                        <p>阴阳相互依存</p>
+                    </div>
+                    <div class="diagram-item">
+                        <span>消长</span>
+                        <p>阴阳动态平衡</p>
+                    </div>
+                    <div class="diagram-item">
+                        <span>转化</span>
+                        <p>阴阳相互转化</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>三、阴阳在中医中的应用</h3>
+            <p>在中医理论中，阴阳学说广泛应用于解释人体生理、病理、诊断和治疗：</p>
+            
+            <ul>
+                <li><strong>生理方面：</strong>人体正常生命活动是阴阳平衡的结果</li>
+                <li><strong>病理方面：</strong>疾病的发生是阴阳失调的表现</li>
+                <li><strong>诊断方面：</strong>通过辨别阴阳确定病证性质</li>
+                <li><strong>治疗方面：</strong>调整阴阳，恢复平衡</li>
+            </ul>
+        </section>
+        
+        <!-- 五行学说 -->
+        <section class="content-section">
+            <h2><i class="fas fa-shapes"></i> 五行学说</h2>
+            
+            <h3>一、五行的基本概念</h3>
+            <p>五行指金、木、水、火、土五种物质运动方式。它们之间存在着相生相克的关系：</p>
+            
+            <table class="herb-table">
+                <thead>
+                    <tr>
+                        <th>五行</th>
+                        <th>自然界对应</th>
+                        <th>人体对应</th>
+                        <th>季节</th>
+                        <th>颜色</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>木</td>
+                        <td>植物、生长</td>
+                        <td>肝、胆</td>
+                        <td>春季</td>
+                        <td>青色</td>
+                    </tr>
+                    <tr>
+                        <td>火</td>
+                        <td>火焰、热能</td>
+                        <td>心、小肠</td>
+                        <td>夏季</td>
+                        <td>红色</td>
+                    </tr>
+                    <tr>
+                        <td>土</td>
+                        <td>大地、土壤</td>
+                        <td>脾、胃</td>
+                        <td>长夏</td>
+                        <td>黄色</td>
+                    </tr>
+                    <tr>
+                        <td>金</td>
+                        <td>金属、矿石</td>
+                        <td>肺、大肠</td>
+                        <td>秋季</td>
+                        <td>白色</td>
+                    </tr>
+                    <tr>
+                        <td>水</td>
+                        <td>流水、江河</td>
+                        <td>肾、膀胱</td>
+                        <td>冬季</td>
+                        <td>黑色</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>二、五行相生相克</h3>
+            <p>五行之间存在着相生、相克、相乘、相侮的关系：</p>
+            
+            <div class="highlight">
+                <p><strong>相生关系：</strong>木生火 → 火生土 → 土生金 → 金生水 → 水生木</p>
+                <p><strong>相克关系：</strong>木克土 → 土克水 → 水克火 → 火克金 → 金克木</p>
+            </div>
+            
+            <h3>三、五行在中医中的应用</h3>
+            <p>五行学说在中医中用于解释五脏六腑的生理功能、病理变化及相互关系：</p>
+            
+            <ul>
+                <li>解释五脏的生理功能和相互关系</li>
+                <li>诊断疾病，判断病位和病性</li>
+                <li>指导治疗，确定治则和治法</li>
+                <li>预防疾病，指导养生保健</li>
+            </ul>
+        </section>
+        
+        <!-- 脏腑学说 -->
+        <section class="content-section">
+            <h2><i class="fas fa-heartbeat"></i> 脏腑学说</h2>
+            
+            <h3>一、五脏六腑</h3>
+            <p>中医将人体内脏分为五脏、六腑和奇恒之腑：</p>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-img" style="background: #e8f4fd;">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>五脏</h3>
+                        <p>心、肝、脾、肺、肾。多为实质性脏器，功能以藏精气为主。</p>
+                        <p><strong>特点：</strong>藏而不泻，满而不实</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-img" style="background: #f0f8e8;">
+                        <i class="fas fa-stomach"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>六腑</h3>
+                        <p>胆、胃、小肠、大肠、膀胱、三焦。多为空腔性脏器，功能以传化物为主。</p>
+                        <p><strong>特点：</strong>泻而不藏，实而不满</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-img" style="background: #fef5e7;">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>奇恒之腑</h3>
+                        <p>脑、髓、骨、脉、胆、女子胞。形态似腑，功能似脏。</p>
+                        <p><strong>特点：</strong>藏而不泻</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>二、主要脏腑功能</h3>
+            
+            <div class="timeline">
+                <!-- 心 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-heart" style="color: #e74c3c;"></i> 心 - 君主之官</h3>
+                        <p><strong>主要功能：</strong>主血脉，主神志</p>
+                        <p><strong>在体合脉：</strong>开窍于舌，其华在面</p>
+                        <p><strong>五行属火：</strong>与小肠相表里</p>
+                    </div>
+                </div>
+                
+                <!-- 肝 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-liver" style="color: #27ae60;"></i> 肝 - 将军之官</h3>
+                        <p><strong>主要功能：</strong>主疏泄，主藏血</p>
+                        <p><strong>在体合筋：</strong>开窍于目，其华在爪</p>
+                        <p><strong>五行属木：</strong>与胆相表里</p>
+                    </div>
+                </div>
+                
+                <!-- 脾 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-digestion" style="color: #f39c12;"></i> 脾 - 仓廪之官</h3>
+                        <p><strong>主要功能：</strong>主运化，主统血</p>
+                        <p><strong>在体合肉：</strong>开窍于口，其华在唇</p>
+                        <p><strong>五行属土：</strong>与胃相表里</p>
+                    </div>
+                </div>
+                
+                <!-- 肺 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-lungs" style="color: #3498db;"></i> 肺 - 相傅之官</h3>
+                        <p><strong>主要功能：</strong>主气司呼吸，主宣发肃降</p>
+                        <p><strong>在体合皮：</strong>开窍于鼻，其华在毛</p>
+                        <p><strong>五行属金：</strong>与大肠相表里</p>
+                    </div>
+                </div>
+                
+                <!-- 肾 -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3><i class="fas fa-kidneys" style="color: #8e44ad;"></i> 肾 - 作强之官</h3>
+                        <p><strong>主要功能：</strong>主藏精，主水，主纳气</p>
+                        <p><strong>在体合骨：</strong>开窍于耳及二阴，其华在发</p>
+                        <p><strong>五行属水：</strong>与膀胱相表里</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 总结 -->
+        <section class="content-section">
+            <div class="quote">
+                <p>"上工治未病，不治已病，此之谓也。"</p>
+                <p style="margin-top: 1rem; font-size: 1rem;">——《黄帝内经·素问》</p>
+            </div>
+            
+            <h2>中医理论的核心价值</h2>
+            <p>中医理论体系博大精深，它不仅是一种医学理论，更是一种哲学思想。其核心价值在于：</p>
+            
+            <ul>
+                <li><strong>整体观念：</strong>将人体看作一个有机整体，强调人与自然、社会的和谐统一</li>
+                <li><strong>辨证论治：</strong>根据个体差异制定个性化治疗方案</li>
+                <li><strong>治未病：</strong>预防为主，强调养生保健</li>
+                <li><strong>自然疗法：</strong>使用天然药物和疗法，减少副作用</li>
+                <li><strong>个性化医疗：</strong>根据个体体质、环境、季节等因素制定治疗方案</li>
+            </ul>
+            
+            <p>中医理论虽然形成于古代，但其思想和理念在现代社会仍然具有重要的指导意义。随着现代科学技术的发展，中医理论也在不断创新和发展，为人类健康事业做出新的贡献。</p>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="herbs.html" class="btn">继续学习中草药 →</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <p><i class="fas fa-graduation-cap"></i> 中医理论专题 | 阴阳五行与脏腑经络</p>
+            <p>探索传统医学智慧，理解人体健康之道</p>
+            <p class="copyright">© 2026 中医养生 | 期末作业 | 理论专题</p>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+            
+            // 关闭菜单当点击链接
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.classList.remove('active');
+                });
+            });
+            
+            // 当前页面高亮
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // 动画效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // 观察所有卡片
+            document.querySelectorAll('.card, .timeline-content, .concept-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

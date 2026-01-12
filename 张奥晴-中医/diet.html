@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>食疗养生 | 药食同源与四季饮食</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 食疗页面特有样式 */
+        .diet-header {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/diet.jpg');
+            background-size: cover;
+            background-position: center 40%;
+        }
+        
+        .food-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .food-category {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .food-category:hover {
+            transform: translateY(-5px);
+        }
+        
+        .category-header {
+            padding: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+        
+        .category-content {
+            padding: 1.5rem;
+        }
+        
+        .category-content ul {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .category-content li {
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .seasonal-guide {
+            margin: 3rem 0;
+        }
+        
+        .season-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+        
+        .season-tab {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .season-tab:hover,
+        .season-tab.active {
+            background: #2a6e3f;
+            color: white;
+            border-color: #2a6e3f;
+        }
+        
+        .season-content {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 1rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .season-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .recipe-section {
+            background: #f9f7f2;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            margin: 3rem 0;
+        }
+        
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .recipe-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .recipe-image {
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .recipe-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .recipe-card:hover .recipe-image img {
+            transform: scale(1.1);
+        }
+        
+        .recipe-info {
+            padding: 1.5rem;
+        }
+        
+        .ingredients-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .ingredients-list li {
+            padding: 0.3rem 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .ingredient-name {
+            color: #666;
+        }
+        
+        .ingredient-amount {
+            color: #2a6e3f;
+            font-weight: bold;
+        }
+        
+        .constitution-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .constitution-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .constitution-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .constitution-icon {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .diet-calendar {
+            margin: 3rem 0;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .calendar-month {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .month-title {
+            color: #2a6e3f;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        
+        .month-foods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .food-tag {
+            background: #e8f5e9;
+            color: #2a6e3f;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .cooking-tips {
+            background: linear-gradient(135deg, #2a6e3f, #4CAF50);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            margin: 3rem 0;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .tip-item {
+            text-align: center;
+        }
+        
+        .tip-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ffd166;
+        }
+        
+        .interactive-form {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin: 3rem 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #2a6e3f;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-result {
+            display: none;
+            background: #f0f7f2;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .season-tabs {
+                flex-direction: column;
+            }
+            
+            .season-tab {
+                text-align: center;
+            }
+            
+            .constitution-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-leaf"></i>
+                中医养生
+            </a>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="theory.html"><i class="fas fa-book-open"></i> 中医理论</a></li>
+                <li><a href="herbs.html"><i class="fas fa-leaf"></i> 中草药</a></li>
+                <li><a href="acupuncture.html"><i class="fas fa-dot-circle"></i> 经络穴位</a></li>
+                <li><a href="diet.html" class="active"><i class="fas fa-utensils"></i> 食疗养生</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <header class="page-header diet-header">
+        <div>
+            <h1>食疗养生</h1>
+            <p>药食同源 · 四季饮食 · 体质调理</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 食疗概述 -->
+        <section class="content-section">
+            <h2>中医食疗概述</h2>
+            <p>食疗又称"食治"，是在中医理论指导下，利用食物的特性来调节机体功能，达到治疗疾病、养生保健的目的。"药食同源"是中医食疗的理论基础，许多食物既有营养价值，又有药用价值。</p>
+            
+            <div class="highlight">
+                <p><strong>核心原则：</strong>辨证施膳，三因制宜（因人、因时、因地），合理搭配，饮食有节。</p>
+            </div>
+            
+            <div class="img-container">
+                <img src="images/diet.jpg" 
+                     alt="药食同源" 
+                     class="responsive-img">
+                <p class="img-caption">食物是最好的医药 - 中医食疗智慧</p>
+            </div>
+        </section>
+        
+        <!-- 药食同源分类 -->
+        <section class="content-section">
+            <h2>药食同源食物分类</h2>
+            <p>根据食物的性味归经和功效，药食同源食物可分为以下几类：</p>
+            
+            <div class="food-categories">
+                <!-- 补气类 -->
+                <div class="food-category">
+                    <div class="category-header" style="background: linear-gradient(135deg, #e74c3c, #e67e22);">
+                        <h3><i class="fas fa-heartbeat"></i> 补气类</h3>
+                        <p>性味：甘温，归脾肺经</p>
+                    </div>
+                    <div class="category-content">
+                        <p><strong>功效：</strong>补益元气，健脾养肺</p>
+                        <p><strong>适用：</strong>气虚体弱，乏力懒言，自汗</p>
+                        
+                        <h4>常见食物</h4>
+                        <ul>
+                            <li><i class="fas fa-seedling" style="color: #27ae60;"></i> 山药 - 补脾肺肾</li>
+                            <li><i class="fas fa-apple-alt" style="color: #e74c3c;"></i> 大枣 - 补中益气</li>
+                            <li><i class="fas fa-bread-slice" style="color: #f39c12;"></i> 糯米 - 健脾暖胃</li>
+                            <li><i class="fas fa-carrot" style="color: #e67e22;"></i> 胡萝卜 - 健脾化滞</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 补血类 -->
+                <div class="food-category">
+                    <div class="category-header" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                        <h3><i class="fas fa-tint"></i> 补血类</h3>
+                        <p>性味：甘温，归心肝经</p>
+                    </div>
+                    <div class="category-content">
+                        <p><strong>功效：</strong>滋养阴血，养心安神</p>
+                        <p><strong>适用：</strong>血虚萎黄，心悸失眠</p>
+                        
+                        <h4>常见食物</h4>
+                        <ul>
+                            <li><i class="fas fa-dragon" style="color: #8e44ad;"></i> 龙眼肉 - 补心脾，益气血</li>
+                            <li><i class="fas fa-gem" style="color: #e74c3c;"></i> 红枣 - 补中益气，养血安神</li>
+                            <li><i class="fas fa-hippo" style="color: #7f8c8d;"></i> 猪肝 - 补肝明目，养血</li>
+                            <li><i class="fas fa-circle" style="color: #8b0000;"></i> 黑芝麻 - 补肝肾，益精血</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 滋阴类 -->
+                <div class="food-category">
+                    <div class="category-header" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                        <h3><i class="fas fa-tint"></i> 滋阴类</h3>
+                        <p>性味：甘凉，归肺肾经</p>
+                    </div>
+                    <div class="category-content">
+                        <p><strong>功效：</strong>滋养阴液，润燥生津</p>
+                        <p><strong>适用：</strong>阴虚内热，口干咽燥</p>
+                        
+                        <h4>常见食物</h4>
+                        <ul>
+                            <li><i class="fas fa-egg" style="color: #f1c40f;"></i> 银耳 - 滋阴润肺</li>
+                            <li><i class="fas fa-apple-alt" style="color: #8e44ad;"></i> 梨 - 清热润肺</li>
+                            <li><i class="fas fa-seedling" style="color: #27ae60;"></i> 百合 - 清心安神</li>
+                            <li><i class="fas fa-circle" style="color: #000;"></i> 黑豆 - 补肾滋阴</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 温阳类 -->
+                <div class="food-category">
+                    <div class="category-header" style="background: linear-gradient(135deg, #e67e22, #d35400);">
+                        <h3><i class="fas fa-sun"></i> 温阳类</h3>
+                        <p>性味：辛热，归肾脾经</p>
+                    </div>
+                    <div class="category-content">
+                        <p><strong>功效：</strong>温补阳气，散寒止痛</p>
+                        <p><strong>适用：</strong>阳虚畏寒，腰膝冷痛</p>
+                        
+                        <h4>常见食物</h4>
+                        <ul>
+                            <li><i class="fas fa-drumstick-bite" style="color: #c0392b;"></i> 羊肉 - 温中暖肾</li>
+                            <li><i class="fas fa-pepper-hot" style="color: #e74c3c;"></i> 生姜 - 温中散寒</li>
+                            <li><i class="fas fa-pepper-hot" style="color: #27ae60;"></i> 韭菜 - 温肾壮阳</li>
+                            <li><i class="fas fa-pepper-hot" style="color: #f39c12;"></i> 肉桂 - 补火助阳</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        
+        <!-- 体质食疗 -->
+        <section class="content-section">
+            <h2>九种体质食疗方案</h2>
+            <p>中医将人的体质分为九种，不同体质的人适合不同的食疗方案。</p>
+            
+            <div class="constitution-types">
+                <!-- 平和质 -->
+                <div class="constitution-card">
+                    <div class="constitution-header">
+                        <div class="constitution-icon" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div>
+                            <h3>平和质</h3>
+                            <p>阴阳气血调和，体态适中</p>
+                        </div>
+                    </div>
+                    <p><strong>特征：</strong>面色红润，精力充沛，适应力强</p>
+                    <p><strong>食疗原则：</strong>饮食有节，营养均衡</p>
+                    <p><strong>推荐食物：</strong>五谷杂粮，时令蔬菜水果</p>
+                </div>
+                
+                <!-- 气虚质 -->
+                <div class="constitution-card">
+                    <div class="constitution-header">
+                        <div class="constitution-icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <div>
+                            <h3>气虚质</h3>
+                            <p>元气不足，易疲乏气短</p>
+                        </div>
+                    </div>
+                    <p><strong>特征：</strong>容易疲劳，气短懒言，易出汗</p>
+                    <p><strong>食疗原则：</strong>补气健脾</p>
+                    <p><strong>推荐食物：</strong>山药、大枣、糯米、鸡肉</p>
+                </div>
+                
+                <!-- 阳虚质 -->
+                <div class="constitution-card">
+                    <div class="constitution-header">
+                        <div class="constitution-icon" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                            <i class="fas fa-snowflake"></i>
+                        </div>
+                        <div>
+                            <h3>阳虚质</h3>
+                            <p>阳气不足，畏寒怕冷</p>
+                        </div>
+                    </div>
+                    <p><strong>特征：</strong>手脚冰凉，喜热畏寒，大便稀溏</p>
+                    <p><strong>食疗原则：</strong>温补阳气</p>
+                    <p><strong>推荐食物：</strong>羊肉、韭菜、核桃、生姜</p>
+                </div>
+                
+                <!-- 阴虚质 -->
+                <div class="constitution-card">
+                    <div class="constitution-header">
+                        <div class="constitution-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div>
+                            <h3>阴虚质</h3>
+                            <p>阴液亏少，口燥咽干</p>
+                        </div>
+                    </div>
+                    <p><strong>特征：</strong>手足心热，口燥咽干，喜冷饮</p>
+                    <p><strong>食疗原则：</strong>滋阴润燥</p>
+                    <p><strong>推荐食物：</strong>银耳、梨、百合、黑芝麻</p>
+                </div>
+            </div>
+            
+            <!-- 体质测试工具 -->
+            <div class="interactive-form">
+                <h3>体质初步判断工具</h3>
+                <p>请回答以下问题，系统会给出初步的体质判断和饮食建议：</p>
+                
+                <div class="form-group">
+                    <label>1. 您平时容易疲劳吗？</label>
+                    <select id="q1">
+                        <option value="">请选择</option>
+                        <option value="yes">是，很容易疲劳</option>
+                        <option value="no">否，精力充沛</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>2. 您怕冷还是怕热？</label>
+                    <select id="q2">
+                        <option value="">请选择</option>
+                        <option value="cold">怕冷，手脚冰凉</option>
+                        <option value="hot">怕热，容易出汗</option>
+                        <option value="normal">正常，不怕冷也不怕热</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>3. 您容易口干舌燥吗？</label>
+                    <select id="q3">
+                        <option value="">请选择</option>
+                        <option value="yes">是，经常口干</option>
+                        <option value="no">否，不觉得口干</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="analyzeConstitution()" style="width: 100%;">分析体质</button>
+                
+                <div class="form-result" id="constitutionResult">
+                    <h3 id="resultConstitution"></h3>
+                    <p id="resultDescription"></p>
+                    <h4>饮食建议：</h4>
+                    <p id="dietAdvice"></p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 养生食谱 -->
+        <section class="recipe-section">
+            <h2 class="page-title">养生食谱推荐</h2>
+            
+            <div class="recipe-grid">
+                <!-- 山药排骨汤 -->
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                    </div>
+                    <div class="recipe-info">
+                        <h3>山药排骨汤</h3>
+                        <p><strong>功效：</strong>补脾养胃，益气养血</p>
+                        <p><strong>适用：</strong>脾胃虚弱，气血不足</p>
+                        
+                        <h4>食材清单</h4>
+                        <ul class="ingredients-list">
+                            <li><span class="ingredient-name">排骨</span><span class="ingredient-amount">500g</span></li>
+                            <li><span class="ingredient-name">山药</span><span class="ingredient-amount">300g</span></li>
+                            <li><span class="ingredient-name">枸杞</span><span class="ingredient-amount">15g</span></li>
+                            <li><span class="ingredient-name">生姜</span><span class="ingredient-amount">3片</span></li>
+                        </ul>
+                        
+                        <h4>制作方法</h4>
+                        <p>1. 排骨焯水洗净；2. 山药去皮切块；3. 所有材料放入锅中，加水煮沸后转小火炖1小时；4. 加盐调味即可。</p>
+                    </div>
+                </div>
+                
+                <!-- 银耳莲子羹 -->
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                    </div>
+                    <div class="recipe-info">
+                        <h3>银耳莲子羹</h3>
+                        <p><strong>功效：</strong>滋阴润肺，养心安神</p>
+                        <p><strong>适用：</strong>阴虚肺燥，心烦失眠</p>
+                        
+                        <h4>食材清单</h4>
+                        <ul class="ingredients-list">
+                            <li><span class="ingredient-name">银耳</span><span class="ingredient-amount">1朵</span></li>
+                            <li><span class="ingredient-name">莲子</span><span class="ingredient-amount">30g</span></li>
+                            <li><span class="ingredient-name">红枣</span><span class="ingredient-amount">8颗</span></li>
+                            <li><span class="ingredient-name">冰糖</span><span class="ingredient-amount">适量</span></li>
+                        </ul>
+                        
+                        <h4>制作方法</h4>
+                        <p>1. 银耳泡发撕小朵；2. 所有材料放入锅中，加水煮沸后转小火炖1小时；3. 加入冰糖煮化即可。</p>
+                    </div>
+                </div>
+                
+                <!-- 红豆薏米粥 -->
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                    </div>
+                    <div class="recipe-info">
+                        <h3>红豆薏米粥</h3>
+                        <p><strong>功效：</strong>健脾祛湿，利水消肿</p>
+                        <p><strong>适用：</strong>脾虚湿盛，水肿肥胖</p>
+                        
+                        <h4>食材清单</h4>
+                        <ul class="ingredients-list">
+                            <li><span class="ingredient-name">红豆</span><span class="ingredient-amount">100g</span></li>
+                            <li><span class="ingredient-name">薏米</span><span class="ingredient-amount">100g</span></li>
+                            <li><span class="ingredient-name">糯米</span><span class="ingredient-amount">50g</span></li>
+                            <li><span class="ingredient-name">冰糖</span><span class="ingredient-amount">适量</span></li>
+                        </ul>
+                        
+                        <h4>制作方法</h4>
+                        <p>1. 所有材料洗净浸泡2小时；2. 放入锅中，加水煮沸后转小火煮1小时；3. 加入冰糖煮化即可。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 饮食禁忌 -->
+        <section class="content-section">
+            <h2>饮食禁忌与注意事项</h2>
+            
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-content">
+                        <h3>食物相克</h3>
+                        <ul>
+                            <li><strong>螃蟹 + 柿子：</strong>可能引起腹痛腹泻</li>
+                            <li><strong>羊肉 + 西瓜：</strong>可能影响消化功能</li>
+                            <li><strong>蜂蜜 + 豆腐：</strong>可能引起腹泻</li>
+                            <li><strong>牛奶 + 药物：</strong>影响药物吸收</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-content">
+                        <h3>服药禁忌</h3>
+                        <ul>
+                            <li><strong>服用人参：</strong>忌食萝卜、浓茶</li>
+                            <li><strong>服用中药：</strong>忌食生冷、油腻、辛辣</li>
+                            <li><strong>服用补药：</strong>忌食萝卜、绿豆</li>
+                            <li><strong>服用清热药：</strong>忌食辛辣、温补食物</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-content">
+                        <h3>特殊人群</h3>
+                        <ul>
+                            <li><strong>孕妇：</strong>慎食活血、滑胎食物</li>
+                            <li><strong>儿童：</strong>少食零食、冷饮</li>
+                            <li><strong>老人：</strong>饮食宜软烂、易消化</li>
+                            <li><strong>病中：</strong>根据病情调整饮食</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 烹饪技巧 -->
+        <section class="cooking-tips">
+            <h2>中医养生烹饪技巧</h2>
+            
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <div class="tip-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4>文火慢炖</h4>
+                    <p>药膳宜用文火慢炖，充分释放营养成分</p>
+                </div>
+                
+                <div class="tip-item">
+                    <div class="tip-icon">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <h4>原汤化原食</h4>
+                    <p>汤中的营养成分更易被人体吸收</p>
+                </div>
+                
+                <div class="tip-item">
+                    <div class="tip-icon">
+                        <i class="fas fa-utensil-spoon"></i>
+                    </div>
+                    <h4>适时调味</h4>
+                    <p>盐和调料应在出锅前加入</p>
+                </div>
+                
+                <div class="tip-item">
+                    <div class="tip-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h4>保留原味</h4>
+                    <p>尽量保持食材的自然风味</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 总结 -->
+        <section class="content-section">
+            <div class="quote">
+                <p>"五谷为养，五果为助，五畜为益，五菜为充，气味合而服之，以补精益气。"</p>
+                <p style="margin-top: 1rem; font-size: 1rem;">——《黄帝内经·素问》</p>
+            </div>
+            
+            <h2>食疗养生的现代意义</h2>
+            <p>中医食疗作为传统医学的重要组成部分，在现代社会具有重要的现实意义：</p>
+            
+            <ul>
+                <li><strong>预防疾病：</strong>通过饮食调理，预防慢性疾病的发生</li>
+                <li><strong>辅助治疗：</strong>配合药物治疗，提高疗效，减少副作用</li>
+                <li><strong>延缓衰老：</strong>通过合理饮食，延缓衰老过程</li>
+                <li><strong>提高生活质量：</strong>改善亚健康状态，提高生活质量</li>
+                <li><strong>个性化营养：</strong>根据个体差异制定个性化饮食方案</li>
+                <li><strong>文化传承：</strong>传承和发扬中华饮食文化</li>
+            </ul>
+            
+            <p>随着现代营养学的发展，中医食疗的科学性不断被验证。将传统食疗智慧与现代营养学相结合，可以为人们的健康提供更加科学、全面的指导。</p>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="index.html" class="btn">返回首页</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <p><i class="fas fa-utensils"></i> 食疗养生专题 | 药食同源与健康饮食</p>
+            <p>让食物成为你的药物，让药物成为你的食物</p>
+            <p class="copyright">© 2026 中医养生 | 期末作业 | 食疗专题</p>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+            
+            // 关闭菜单当点击链接
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.classList.remove('active');
+                });
+            });
+            
+            // 当前页面高亮
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // 季节标签切换
+            const seasonTabs = document.querySelectorAll('.season-tab');
+            const seasonContents = document.querySelectorAll('.season-content');
+            
+            seasonTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const season = this.getAttribute('data-season');
+                    
+                    // 移除所有active类
+                    seasonTabs.forEach(t => t.classList.remove('active'));
+                    seasonContents.forEach(c => c.classList.remove('active'));
+                    
+                    // 添加当前active类
+                    this.classList.add('active');
+                    document.getElementById(`${season}-content`).classList.add('active');
+                });
+            });
+            
+            // 动画效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // 观察所有卡片
+            document.querySelectorAll('.card, .food-category, .recipe-card, .constitution-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(el);
+            });
+        });
+        
+        // 体质分析函数
+        function analyzeConstitution() {
+            const q1 = document.getElementById('q1').value;
+            const q2 = document.getElementById('q2').value;
+            const q3 = document.getElementById('q3').value;
+            
+            const resultDiv = document.getElementById('constitutionResult');
+            const resultTitle = document.getElementById('resultConstitution');
+            const resultDesc = document.getElementById('resultDescription');
+            const dietAdvice = document.getElementById('dietAdvice');
+            
+            if (!q1 || !q2 || !q3) {
+                alert('请回答所有问题');
+                return;
+            }
+            
+            // 简单的判断逻辑
+            let constitution = '';
+            let description = '';
+            let advice = '';
+            
+            if (q1 === 'yes' && q2 === 'cold') {
+                constitution = '气虚质或阳虚质';
+                description = '您可能属于气虚或阳虚体质，容易疲劳，怕冷。';
+                advice = '建议多食温补食物，如山药、大枣、羊肉、生姜等，避免生冷寒凉食物。';
+            } else if (q1 === 'yes' && q2 === 'hot') {
+                constitution = '气虚质或阴虚质';
+                description = '您可能属于气虚或阴虚体质，容易疲劳，怕热。';
+                advice = '建议多食益气养阴食物，如山药、银耳、百合、枸杞等，避免辛辣燥热食物。';
+            } else if (q3 === 'yes' && q2 === 'hot') {
+                constitution = '阴虚质';
+                description = '您可能属于阴虚体质，容易口干，怕热。';
+                advice = '建议多食滋阴润燥食物，如梨、银耳、百合、黑芝麻等，避免辛辣燥热食物。';
+            } else {
+                constitution = '平和质';
+                description = '您的体质相对平和，继续保持良好的生活习惯。';
+                advice = '饮食均衡，五谷杂粮，蔬菜水果搭配合理即可。';
+            }
+            
+            resultTitle.textContent = `体质判断：${constitution}`;
+            resultDesc.textContent = description;
+            dietAdvice.textContent = advice;
+            resultDiv.style.display = 'block';
+            
+            // 滚动到结果
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

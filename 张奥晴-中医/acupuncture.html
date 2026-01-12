@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经络穴位 | 中医针灸与按摩养生</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 经络穴位页面特有样式 */
+        .acupuncture-header {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/acu.jpeg');
+            background-size: cover;
+            background-position: center 40%;
+        }
+        
+        .meridian-system {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .meridian-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+            transition: transform 0.3s ease;
+        }
+        
+        .meridian-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .meridian-card h3 {
+            color: #2a6e3f;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .meridian-card h3 i {
+            font-size: 1.3rem;
+        }
+        
+        .point-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .point-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .point-name {
+            font-weight: bold;
+            color: #2a6e3f;
+        }
+        
+        .point-function {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .point-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .point-detail-content {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .acupoint-diagram {
+            text-align: center;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+            border-radius: 15px;
+        }
+        
+        .diagram-container {
+            position: relative;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+        
+        .diagram-body {
+            width: 300px;
+            height: 600px;
+            background: #f5f5f5;
+            border-radius: 150px 150px 0 0;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .acupoint-dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #e74c3c;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px #e74c3c;
+        }
+        
+        .acupoint-dot:hover {
+            transform: scale(1.5);
+            background: #c0392b;
+        }
+        
+        .acupoint-tooltip {
+            position: absolute;
+            background: #2a6e3f;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            z-index: 10;
+            display: none;
+        }
+        
+        .point-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .point-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .point-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+        
+        .point-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .point-code {
+            background: #2a6e3f;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .point-item h4 {
+            color: #2a6e3f;
+            margin-bottom: 0.5rem;
+        }
+        
+        .massage-techniques {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .technique-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .technique-icon {
+            font-size: 3rem;
+            color: #2a6e3f;
+            margin-bottom: 1.5rem;
+        }
+        
+        .technique-steps {
+            list-style: none;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+        
+        .technique-steps li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .technique-steps li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2a6e3f;
+            font-weight: bold;
+        }
+        
+        .acupuncture-types {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+        
+        .acupuncture-type {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .type-icon {
+            font-size: 2.5rem;
+            color: #2a6e3f;
+            margin-bottom: 1rem;
+        }
+        
+        .interactive-quiz {
+            background: linear-gradient(135deg, #2a6e3f, #4CAF50);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            margin: 3rem 0;
+            text-align: center;
+        }
+        
+        .quiz-question {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .quiz-option {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .quiz-result {
+            display: none;
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+        
+        .meridian-chart {
+            overflow-x: auto;
+            margin: 3rem 0;
+        }
+        
+        .chart-table {
+            min-width: 800px;
+            width: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .point-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .acupuncture-types {
+                flex-direction: column;
+            }
+            
+            .acupuncture-type {
+                min-width: auto;
+            }
+            
+            .point-detail-content {
+                padding: 2rem 1rem;
+            }
+            
+            .quiz-options {
+                flex-direction: column;
+            }
+            
+            .quiz-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-leaf"></i>
+                中医养生
+            </a>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="theory.html"><i class="fas fa-book-open"></i> 中医理论</a></li>
+                <li><a href="herbs.html"><i class="fas fa-leaf"></i> 中草药</a></li>
+                <li><a href="acupuncture.html" class="active"><i class="fas fa-dot-circle"></i> 经络穴位</a></li>
+                <li><a href="diet.html"><i class="fas fa-utensils"></i> 食疗养生</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <header class="page-header acupuncture-header">
+        <div>
+            <h1>经络与穴位</h1>
+            <p>气血通道 · 穴位养生 · 针灸按摩</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 经络系统概述 -->
+        <section class="content-section">
+            <h2>经络系统概述</h2>
+            <p>经络是中医理论的重要组成部分，是人体运行气血、联络脏腑、沟通内外、贯穿上下的通路。经络系统由经脉和络脉组成，其中经脉是主干，络脉是分支。</p>
+            
+            <div class="highlight">
+                <p><strong>核心功能：</strong>运行气血，平衡阴阳，联络脏腑，沟通表里，感应传导，调节虚实。</p>
+            </div>
+            
+            
+        </section>
+        
+        <!-- 十二正经系统 -->
+        <section class="content-section">
+            <h2>十二正经系统</h2>
+            <p>十二正经是经络系统的主体，包括手三阴经、手三阳经、足三阴经、足三阳经，左右对称分布，共二十四条。</p>
+            
+            <div class="meridian-chart">
+                <table class="herb-table chart-table">
+                    <thead>
+                        <tr>
+                            <th>经络名称</th>
+                            <th>循行部位</th>
+                            <th>主治病证</th>
+                            <th>主要穴位</th>
+                            <th>流注时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>手太阴肺经</td>
+                            <td>胸部→上肢内侧前缘→拇指</td>
+                            <td>肺系、咽喉、胸肺部疾病</td>
+                            <td>中府、尺泽、列缺、少商</td>
+                            <td>寅时 (3-5时)</td>
+                        </tr>
+                        <tr>
+                            <td>手阳明大肠经</td>
+                            <td>食指→上肢外侧前缘→对侧鼻旁</td>
+                            <td>头面、五官、热病、肠胃病</td>
+                            <td>合谷、曲池、肩髃、迎香</td>
+                            <td>卯时 (5-7时)</td>
+                        </tr>
+                        <tr>
+                            <td>足阳明胃经</td>
+                            <td>鼻旁→胸腹→下肢前外侧→次趾</td>
+                            <td>胃肠病、头面五官病、神志病</td>
+                            <td>四白、地仓、天枢、足三里</td>
+                            <td>辰时 (7-9时)</td>
+                        </tr>
+                        <tr>
+                            <td>足太阴脾经</td>
+                            <td>大趾→下肢内侧前缘→胸胁部</td>
+                            <td>脾胃病、妇科病、前阴病</td>
+                            <td>三阴交、阴陵泉、血海、大横</td>
+                            <td>巳时 (9-11时)</td>
+                        </tr>
+                        <tr>
+                            <td>手少阴心经</td>
+                            <td>心中→上肢内侧后缘→小指</td>
+                            <td>心、胸、神志病</td>
+                            <td>极泉、少海、神门、少冲</td>
+                            <td>午时 (11-13时)</td>
+                        </tr>
+                        <tr>
+                            <td>手太阳小肠经</td>
+                            <td>小指→上肢外侧后缘→耳前</td>
+                            <td>头面五官病、热病、神志病</td>
+                            <td>后溪、肩贞、天宗、听宫</td>
+                            <td>未时 (13-15时)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="meridian-system">
+                <div class="meridian-card" style="border-left-color: #3498db;">
+                    <h3><i class="fas fa-hand-point-up" style="color: #3498db;"></i> 手三阴经</h3>
+                    <p>手太阴肺经、手厥阴心包经、手少阴心经</p>
+                    <p><strong>循行：</strong>从胸走手，行于上肢内侧</p>
+                    <p><strong>功能：</strong>主司胸部疾病和神志病</p>
+                </div>
+                
+                <div class="meridian-card" style="border-left-color: #27ae60;">
+                    <h3><i class="fas fa-hand-point-right" style="color: #27ae60;"></i> 手三阳经</h3>
+                    <p>手阳明大肠经、手少阳三焦经、手太阳小肠经</p>
+                    <p><strong>循行：</strong>从手走头，行于上肢外侧</p>
+                    <p><strong>功能：</strong>主司头面五官疾病和热病</p>
+                </div>
+                
+                <div class="meridian-card" style="border-left-color: #e67e22;">
+                    <h3><i class="fas fa-walking" style="color: #e67e22;"></i> 足三阳经</h3>
+                    <p>足阳明胃经、足少阳胆经、足太阳膀胱经</p>
+                    <p><strong>循行：</strong>从头走足，行于下肢外侧</p>
+                    <p><strong>功能：</strong>主司头面、躯干、下肢疾病</p>
+                </div>
+                
+                <div class="meridian-card" style="border-left-color: #9b59b6;">
+                    <h3><i class="fas fa-shoe-prints" style="color: #9b59b6;"></i> 足三阴经</h3>
+                    <p>足太阴脾经、足厥阴肝经、足少阴肾经</p>
+                    <p><strong>循行：</strong>从足走腹，行于下肢内侧</p>
+                    <p><strong>功能：</strong>主司腹部疾病和妇科病</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 常用养生穴位 -->
+        <section class="content-section">
+            <h2>常用养生穴位</h2>
+            <p>以下是一些日常保健中常用的穴位，通过按摩这些穴位可以达到养生保健、预防疾病的效果。</p>
+            
+            <div class="point-grid">
+                <!-- 足三里 -->
+                <div class="point-item" data-point="zusanli">
+                    <div class="point-item-header">
+                        <h4>足三里</h4>
+                        <span class="point-code">ST36</span>
+                    </div>
+                    <p><strong>定位：</strong>小腿外侧，犊鼻下3寸</p>
+                    <p><strong>功效：</strong>健脾和胃，扶正培元</p>
+                    <p><strong>主治：</strong>胃痛、腹胀、泄泻、虚劳</p>
+                </div>
+                
+                <!-- 合谷 -->
+                <div class="point-item" data-point="hegu">
+                    <div class="point-item-header">
+                        <h4>合谷</h4>
+                        <span class="point-code">LI4</span>
+                    </div>
+                    <p><strong>定位：</strong>手背，第1、2掌骨间</p>
+                    <p><strong>功效：</strong>疏风解表，镇痛通络</p>
+                    <p><strong>主治：</strong>头痛、牙痛、发热、感冒</p>
+                </div>
+                
+                <!-- 三阴交 -->
+                <div class="point-item" data-point="sanyinjiao">
+                    <div class="point-item-header">
+                        <h4>三阴交</h4>
+                        <span class="point-code">SP6</span>
+                    </div>
+                    <p><strong>定位：</strong>小腿内侧，内踝尖上3寸</p>
+                    <p><strong>功效：</strong>健脾和胃，调补肝肾</p>
+                    <p><strong>主治：</strong>妇科病、脾胃病、失眠</p>
+                </div>
+                
+                <!-- 涌泉 -->
+                <div class="point-item" data-point="yongquan">
+                    <div class="point-item-header">
+                        <h4>涌泉</h4>
+                        <span class="point-code">KI1</span>
+                    </div>
+                    <p><strong>定位：</strong>足底，蜷足时前部凹陷处</p>
+                    <p><strong>功效：</strong>滋阴降火，开窍醒神</p>
+                    <p><strong>主治：</strong>失眠、头痛、眩晕、高血压</p>
+                </div>
+                
+                <!-- 内关 -->
+                <div class="point-item" data-point="neiguan">
+                    <div class="point-item-header">
+                        <h4>内关</h4>
+                        <span class="point-code">PC6</span>
+                    </div>
+                    <p><strong>定位：</strong>前臂内侧，腕横纹上2寸</p>
+                    <p><strong>功效：</strong>宁心安神，和胃降逆</p>
+                    <p><strong>主治：</strong>心悸、胃痛、呕吐、失眠</p>
+                </div>
+                
+                <!-- 关元 -->
+                <div class="point-item" data-point="guanyuan">
+                    <div class="point-item-header">
+                        <h4>关元</h4>
+                        <span class="point-code">CV4</span>
+                    </div>
+                    <p><strong>定位：</strong>下腹部，前正中线上</p>
+                    <p><strong>功效：</strong>培元固本，补益下焦</p>
+                    <p><strong>主治：</strong>虚劳、遗精、阳痿、月经不调</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 穴位详细信息 -->
+        <section class="content-section">
+            <h2>重点穴位详解</h2>
+            
+            <div class="cards-container">
+                <!-- 足三里详解 -->
+                <div class="card">
+                    <div class="card-img" style="background: #e8f4fd;">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>足三里 (ST36)</h3>
+                        <p><strong>"长寿穴"、"保健要穴"</strong></p>
+                        
+                        <h4>准确取穴</h4>
+                        <p>正坐屈膝，在小腿外侧，犊鼻（膝盖外侧凹陷）下3寸，胫骨前嵴外1横指处。</p>
+                        
+                        <h4>按摩方法</h4>
+                        <ul>
+                            <li>用拇指指腹按揉，力度适中</li>
+                            <li>每次按摩5-10分钟，每日1-2次</li>
+                            <li>配合呼吸，吸气时按压，呼气时放松</li>
+                        </ul>
+                        
+                        <h4>养生功效</h4>
+                        <ul>
+                            <li>增强免疫力，预防感冒</li>
+                            <li>调理脾胃，改善消化功能</li>
+                            <li>补中益气，改善疲劳乏力</li>
+                            <li>延年益寿，延缓衰老</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 合谷详解 -->
+                <div class="card">
+                    <div class="card-img" style="background: #f0f8e8;">
+                        <i class="fas fa-hand-paper"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>合谷 (LI4)</h3>
+                        <p><strong>"止痛要穴"、"面口合谷收"</strong></p>
+                        
+                        <h4>准确取穴</h4>
+                        <p>在手背，第1、2掌骨间，当第2掌骨桡侧的中点处。简便取穴法：以一手的拇指指骨关节横纹，放在另一手拇、食指之间的指蹼缘上，拇指尖下即是。</p>
+                        
+                        <h4>按摩方法</h4>
+                        <ul>
+                            <li>用拇指按压，力度稍大</li>
+                            <li>每次按压3-5分钟，痛时即按</li>
+                            <li>可配合艾灸，效果更佳</li>
+                        </ul>
+                        
+                        <h4>养生功效</h4>
+                        <ul>
+                            <li>缓解头痛、牙痛、咽喉痛</li>
+                            <li>防治感冒，增强抵抗力</li>
+                            <li>调理面部疾病，美容养颜</li>
+                            <li>镇静安神，缓解紧张情绪</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 三阴交详解 -->
+                <div class="card">
+                    <div class="card-img" style="background: #fef5e7;">
+                        <i class="fas fa-female"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>三阴交 (SP6)</h3>
+                        <p><strong>"妇科要穴"、"美容穴"</strong></p>
+                        
+                        <h4>准确取穴</h4>
+                        <p>在小腿内侧，内踝尖上3寸，胫骨内侧缘后际。简便取穴法：内踝尖向上4横指，胫骨后缘凹陷处。</p>
+                        
+                        <h4>按摩方法</h4>
+                        <ul>
+                            <li>用拇指指腹按揉，力度轻柔</li>
+                            <li>每次按摩5-10分钟，睡前最佳</li>
+                            <li>可配合艾灸，经期慎用</li>
+                        </ul>
+                        
+                        <h4>养生功效</h4>
+                        <ul>
+                            <li>调理月经不调、痛经等妇科病</li>
+                            <li>改善睡眠质量，缓解失眠</li>
+                            <li>健脾祛湿，消除水肿</li>
+                            <li>美容养颜，延缓衰老</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 按摩手法 -->
+        <section class="content-section">
+            <h2>常用按摩手法</h2>
+            
+            <div class="massage-techniques">
+                <div class="technique-card">
+                    <div class="technique-icon">
+                        <i class="fas fa-hand-paper"></i>
+                    </div>
+                    <h3>按法</h3>
+                    <p>用拇指、手掌或肘部按压穴位，由轻到重，持续一定时间。</p>
+                    
+                    <h4>适用部位</h4>
+                    <p>全身各穴位，特别是肌肉丰厚处</p>
+                    
+                    <h4>操作要点</h4>
+                    <ul class="technique-steps">
+                        <li>垂直向下按压，力度均匀</li>
+                        <li>持续30秒-1分钟</li>
+                        <li>配合呼吸节奏</li>
+                        <li>按压后轻轻揉动</li>
+                    </ul>
+                </div>
+                
+                <div class="technique-card">
+                    <div class="technique-icon">
+                        <i class="fas fa-hand-rock"></i>
+                    </div>
+                    <h3>揉法</h3>
+                    <p>用手指、手掌在穴位上做轻柔缓和的回旋转动。</p>
+                    
+                    <h4>适用部位</h4>
+                    <p>腹部、头面部、关节等</p>
+                    
+                    <h4>操作要点</h4>
+                    <ul class="technique-steps">
+                        <li>带动皮下组织一起揉动</li>
+                        <li>每分钟100-120次</li>
+                        <li>动作轻柔，力度适中</li>
+                        <li>顺时针为补，逆时针为泻</li>
+                    </ul>
+                </div>
+                
+                <div class="technique-card">
+                    <div class="technique-icon">
+                        <i class="fas fa-hand-point-up"></i>
+                    </div>
+                    <h3>点法</h3>
+                    <p>用拇指或食指点按穴位，力度集中，刺激较强。</p>
+                    
+                    <h4>适用部位</h4>
+                    <p>骨缝、关节间隙、痛点等</p>
+                    
+                    <h4>操作要点</h4>
+                    <ul class="technique-steps">
+                        <li>垂直用力，力点集中</li>
+                        <li>点按3-5秒后放松</li>
+                        <li>重复5-10次</li>
+                        <li>力度以有酸胀感为宜</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight">
+                <p><strong>按摩注意事项：</strong>饭后1小时内不宜按摩，过饥过饱不宜按摩，皮肤破损处不宜按摩，孕妇某些穴位禁按。</p>
+            </div>
+        </section>
+        
+        <!-- 针灸疗法 -->
+        <section class="content-section">
+            <h2>针灸疗法</h2>
+            <p>针灸是中医的重要组成部分，通过针刺和艾灸刺激穴位，达到治疗和保健的目的。</p>
+            
+            <div class="acupuncture-types">
+                <div class="acupuncture-type">
+                    <div class="type-icon">
+                        <i class="fas fa-syringe"></i>
+                    </div>
+                    <h4>毫针疗法</h4>
+                    <p>最常用的针刺方法，针体细如毫毛，适用于全身各穴位。</p>
+                </div>
+                
+                <div class="acupuncture-type">
+                    <div class="type-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <h4>艾灸疗法</h4>
+                    <p>用艾绒燃烧的热力刺激穴位，温经散寒，扶阳固脱。</p>
+                </div>
+                
+                <div class="acupuncture-type">
+                    <div class="type-icon">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <h4>拔罐疗法</h4>
+                    <p>用罐产生负压吸附皮肤，疏通经络，祛风散寒。</p>
+                </div>
+                
+                <div class="acupuncture-type">
+                    <div class="type-icon">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                    <h4>推拿按摩</h4>
+                    <p>用手法刺激穴位和经络，调和气血，舒筋活络。</p>
+                </div>
+            </div>
+            
+            <h3>针灸的现代应用</h3>
+            <p>针灸疗法已被世界卫生组织（WHO）认可，并在全球范围内得到广泛应用：</p>
+            
+            <ul>
+                <li><strong>疼痛管理：</strong>颈肩腰腿痛、头痛、关节炎等</li>
+                <li><strong>神经系统疾病：</strong>面瘫、中风后遗症、失眠等</li>
+                <li><strong>妇科疾病：</strong>月经不调、痛经、不孕等</li>
+                <li><strong>消化系统疾病：</strong>胃炎、肠易激综合征、便秘等</li>
+                <li><strong>心理健康：</strong>焦虑、抑郁、压力管理等</li>
+            </ul>
+        </section>
+        
+        <!-- 知识小测验 -->
+        <section class="interactive-quiz">
+            <h2>经络穴位知识小测验</h2>
+            
+            <div class="quiz-question" id="quizQuestion">
+                被称为"长寿穴"、"保健要穴"的是哪个穴位？
+            </div>
+            
+            <div class="quiz-options">
+                <div class="quiz-option" data-answer="A">合谷穴</div>
+                <div class="quiz-option" data-answer="B">足三里穴</div>
+                <div class="quiz-option" data-answer="C">三阴交穴</div>
+                <div class="quiz-option" data-answer="D">涌泉穴</div>
+            </div>
+            
+            <div class="quiz-result" id="quizResult">
+                <h3 id="resultTitle"></h3>
+                <p id="resultDescription"></p>
+                <button class="btn" onclick="nextQuestion()" style="background: white; color: #2a6e3f; margin-top: 1rem;">下一题</button>
+            </div>
+        </section>
+        
+        <!-- 总结 -->
+        <section class="content-section">
+            <div class="quote">
+                <p>"经络者，所以决死生，处百病，调虚实，不可不通。"</p>
+                <p style="margin-top: 1rem; font-size: 1rem;">——《黄帝内经·灵枢》</p>
+            </div>
+            
+            <h2>经络养生的现代意义</h2>
+            <p>经络穴位养生是中医养生的重要组成部分，具有独特的优势和价值：</p>
+            
+            <ul>
+                <li><strong>非药物治疗：</strong>避免药物副作用，安全可靠</li>
+                <li><strong>简便易行：</strong>穴位按摩可自行操作，不受时间地点限制</li>
+                <li><strong>整体调节：</strong>通过经络系统调节全身功能，标本兼治</li>
+                <li><strong>预防保健：</strong>强调"治未病"，防病于未然</li>
+                <li><strong>个性化方案：</strong>根据不同体质和病情选择不同穴位</li>
+            </ul>
+            
+            <p>随着现代研究的深入，经络穴位的科学机制逐渐被揭示，为中医养生提供了科学依据。将传统智慧与现代生活相结合，可以更好地发挥经络养生的作用，提高生活质量，延年益寿。</p>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="diet.html" class="btn">学习食疗养生知识 →</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- 穴位详情模态框 -->
+    <div class="point-detail-modal" id="pointModal">
+        <div class="point-detail-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <h2 id="modalTitle"></h2>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <p><i class="fas fa-dot-circle"></i> 经络穴位专题 | 针灸按摩与养生保健</p>
+            <p>掌握经络穴位知识，开启自我保健之门</p>
+            <p class="copyright">© 2026 中医养生 | 期末作业 | 经络专题</p>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+            
+            // 关闭菜单当点击链接
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.classList.remove('active');
+                });
+            });
+            
+            // 当前页面高亮
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // 穴位详情点击
+            document.querySelectorAll('.point-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const point = this.getAttribute('data-point');
+                    showPointDetail(point);
+                });
+            });
+            
+            // 知识测验
+            const quizOptions = document.querySelectorAll('.quiz-option');
+            const quizResult = document.getElementById('quizResult');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultDescription = document.getElementById('resultDescription');
+            
+            quizOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const answer = this.getAttribute('data-answer');
+                    
+                    if (answer === 'B') {
+                        resultTitle.textContent = '回答正确！';
+                        resultDescription.textContent = '足三里穴位于小腿外侧，犊鼻下3寸，是著名的"长寿穴"和"保健要穴"，具有健脾和胃、扶正培元的功效。';
+                    } else {
+                        resultTitle.textContent = '回答错误！';
+                        resultDescription.textContent = '正确答案是足三里穴。它是中医养生中最重要的穴位之一，被称为"长寿穴"。';
+                    }
+                    
+                    quizResult.style.display = 'block';
+                });
+            });
+            
+            // 动画效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // 观察所有卡片
+            document.querySelectorAll('.card, .point-item, .technique-card, .acupuncture-type').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(el);
+            });
+        });
+        
+        // 显示穴位详情
+        function showPointDetail(point) {
+            const modal = document.getElementById('pointModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            
+            let title = '';
+            let content = '';
+            
+            switch(point) {
+                case 'zusanli':
+                    title = '足三里 (ST36) - 长寿穴';
+                    content = `
+                        <h3>穴位定位</h3>
+                        <p>位于小腿前外侧，犊鼻穴下3寸，距胫骨前缘一横指（中指）。</p>
+                        
+                        <h3>简便取穴法</h3>
+                        <p>正坐屈膝，用自己的手掌四指并拢，以食指第一指间关节横纹对准膝盖骨下缘，小指下缘与胫骨前缘交点即是。</p>
+                        
+                        <h3>养生功效</h3>
+                        <ul>
+                            <li><strong>健脾和胃：</strong>调理胃肠功能，改善消化不良</li>
+                            <li><strong>扶正培元：</strong>增强免疫力，预防疾病</li>
+                            <li><strong>延年益寿：</strong>延缓衰老，提高生活质量</li>
+                            <li><strong>镇静安神：</strong>改善睡眠，缓解压力</li>
+                        </ul>
+                        
+                        <h3>按摩方法</h3>
+                        <p>用拇指指腹按揉，每次5-10分钟，每日1-2次。力度以有酸胀感为宜。</p>
+                        
+                        <h3>适用人群</h3>
+                        <p>所有人群，特别是脾胃虚弱、免疫力低下、容易疲劳者。</p>
+                    `;
+                    break;
+                    
+                case 'hegu':
+                    title = '合谷 (LI4) - 止痛要穴';
+                    content = `
+                        <h3>穴位定位</h3>
+                        <p>位于手背，第1、2掌骨间，当第2掌骨桡侧的中点处。</p>
+                        
+                        <h3>简便取穴法</h3>
+                        <p>以一手的拇指指骨关节横纹，放在另一手拇、食指之间的指蹼缘上，拇指尖下即是。</p>
+                        
+                        <h3>养生功效</h3>
+                        <ul>
+                            <li><strong>镇痛止痉：</strong>缓解各种疼痛，如头痛、牙痛</li>
+                            <li><strong>疏风解表：</strong>防治感冒，缓解发热症状</li>
+                            <li><strong>醒脑开窍：</strong>提神醒脑，改善精神状态</li>
+                            <li><strong>美容养颜：</strong>调理面部气血，改善肤色</li>
+                        </ul>
+                        
+                        <h3>注意事项</h3>
+                        <p>孕妇禁用此穴，可能引起子宫收缩。</p>
+                    `;
+                    break;
+                    
+                default:
+                    title = '穴位详情';
+                    content = '<p>详细信息加载中...</p>';
+            }
+            
+            modalTitle.textContent = title;
+            modalContent.innerHTML = content;
+            modal.style.display = 'flex';
+        }
+        
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('pointModal').style.display = 'none';
+        }
+        
+        // 下一题
+        function nextQuestion() {
+            document.getElementById('quizResult').style.display = 'none';
+            // 这里可以添加更多题目
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中草药 | 常用中药材与养生方剂</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 中草药页面特有样式 */
+        .herbs-header {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('images/herbs.jpeg');
+            background-size: cover;
+            background-position: center 40%;
+        }
+        
+        .herb-filter {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 0.8rem 1.8rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: #555;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #2a6e3f;
+            color: white;
+            border-color: #2a6e3f;
+        }
+        
+        .herb-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .herb-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .herb-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .herb-image {
+            height: 220px;
+            overflow: hidden;
+        }
+        
+        .herb-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .herb-item:hover .herb-image img {
+            transform: scale(1.1);
+        }
+        
+        .herb-info {
+            padding: 1.8rem;
+        }
+        
+        .herb-name {
+            color: #2a6e3f;
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .herb-property {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .property-tag {
+            background: #e8f5e9;
+            color: #2a6e3f;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .herb-detail {
+            display: none;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        .herb-detail.active {
+            display: block;
+        }
+        
+        .prescription-section {
+            background: #f9f7f2;
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            margin: 3rem 0;
+        }
+        
+        .prescription-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .prescription-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .ingredient-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .ingredient-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .dosage {
+            color: #2a6e3f;
+            font-weight: bold;
+        }
+        
+        .tab-container {
+            margin: 3rem 0;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+        
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: #666;
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .tab-btn:hover {
+            color: #2a6e3f;
+        }
+        
+        .tab-btn.active {
+            color: #2a6e3f;
+            font-weight: bold;
+        }
+        
+        .tab-btn.active:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #2a6e3f;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 2rem 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .herb-detail-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            margin: 3rem 0;
+        }
+        
+        .herb-description {
+            padding-right: 2rem;
+        }
+        
+        .herb-quick-info {
+            background: #f9f7f2;
+            padding: 2rem;
+            border-radius: 10px;
+        }
+        
+        .info-item {
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .info-value {
+            color: #2a6e3f;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .herb-detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .herb-description {
+                padding-right: 0;
+            }
+            
+            .herb-gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-buttons {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+            
+            .tab-btn {
+                padding: 0.8rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-leaf"></i>
+                中医养生
+            </a>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="theory.html"><i class="fas fa-book-open"></i> 中医理论</a></li>
+                <li><a href="herbs.html" class="active"><i class="fas fa-leaf"></i> 中草药</a></li>
+                <li><a href="acupuncture.html"><i class="fas fa-dot-circle"></i> 经络穴位</a></li>
+                <li><a href="diet.html"><i class="fas fa-utensils"></i> 食疗养生</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <header class="page-header herbs-header">
+        <div>
+            <h1>常用中草药</h1>
+            <p>百草精华 · 自然疗愈 · 药食同源</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 中草药概述 -->
+        <section class="content-section">
+            <h2>中草药概述</h2>
+            <p>中草药是中医治疗疾病的主要手段，已有数千年的应用历史。中药主要来源于植物、动物和矿物，其中以植物药为主。中药的应用基于中医药理论，强调四气五味、升降浮沉、归经等理论指导。</p>
+            
+            <div class="highlight">
+                <p><strong>中药特点：</strong>多成分、多靶点、整体调节、副作用小、强调配伍和辨证施治。</p>
+            </div>
+            
+            <!-- 筛选分类 -->
+            <div class="herb-filter">
+                <button class="filter-btn active" data-filter="all">全部草药</button>
+                <button class="filter-btn" data-filter="tonic">补益类</button>
+                <button class="filter-btn" data-filter="heat-clearing">清热类</button>
+                <button class="filter-btn" data-filter="qi-regulating">理气类</button>
+                <button class="filter-btn" data-filter="blood-activating">活血类</button>
+                <button class="filter-btn" data-filter="dampness-resolving">祛湿类</button>
+            </div>
+        </section>
+        
+        <!-- 常用中草药表格 -->
+        <section class="content-section">
+            <h2>常用中草药一览表</h2>
+            
+            <table class="herb-table">
+                <thead>
+                    <tr>
+                        <th>草药名称</th>
+                        <th>性味</th>
+                        <th>归经</th>
+                        <th>主要功效</th>
+                        <th>用法用量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-category="tonic">
+                        <td>人参</td>
+                        <td>甘、微苦，微温</td>
+                        <td>脾、肺、心经</td>
+                        <td>大补元气，补脾益肺，生津安神</td>
+                        <td>3-9g，另煎兑服</td>
+                    </tr>
+                    <tr data-category="tonic">
+                        <td>黄芪</td>
+                        <td>甘，微温</td>
+                        <td>脾、肺经</td>
+                        <td>补气升阳，固表止汗，利水消肿</td>
+                        <td>9-30g，煎服</td>
+                    </tr>
+                    <tr data-category="heat-clearing">
+                        <td>金银花</td>
+                        <td>甘，寒</td>
+                        <td>肺、心、胃经</td>
+                        <td>清热解毒，疏散风热</td>
+                        <td>6-15g，煎服</td>
+                    </tr>
+                    <tr data-category="heat-clearing">
+                        <td>菊花</td>
+                        <td>甘、苦，微寒</td>
+                        <td>肺、肝经</td>
+                        <td>散风清热，平肝明目</td>
+                        <td>5-10g，煎服或泡茶</td>
+                    </tr>
+                    <tr data-category="qi-regulating">
+                        <td>陈皮</td>
+                        <td>辛、苦，温</td>
+                        <td>脾、肺经</td>
+                        <td>理气健脾，燥湿化痰</td>
+                        <td>3-10g，煎服</td>
+                    </tr>
+                    <tr data-category="tonic">
+                        <td>枸杞子</td>
+                        <td>甘，平</td>
+                        <td>肝、肾经</td>
+                        <td>滋补肝肾，益精明目</td>
+                        <td>6-12g，煎服或泡水</td>
+                    </tr>
+                    <tr data-category="blood-activating">
+                        <td>丹参</td>
+                        <td>苦，微寒</td>
+                        <td>心、肝经</td>
+                        <td>活血祛瘀，凉血消痈，养血安神</td>
+                        <td>9-15g，煎服</td>
+                    </tr>
+                    <tr data-category="dampness-resolving">
+                        <td>茯苓</td>
+                        <td>甘、淡，平</td>
+                        <td>心、脾、肾经</td>
+                        <td>利水渗湿，健脾宁心</td>
+                        <td>9-15g，煎服</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <!-- 重点草药介绍 -->
+        <section class="content-section">
+            <h2>重点中草药详解</h2>
+            
+            <div class="herb-gallery">
+                <!-- 人参 -->
+                <div class="herb-item" data-category="tonic">
+                    <div class="herb-image">
+                        <img src="https://images.unsplash.com/photo-1575932440850-4c61e6a5c3d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                             alt="人参"
+                             onerror="this.onerror=null; this.src='images/herb1.jpg'">
+                    </div>
+                    <div class="herb-info">
+                        <div class="herb-name">
+                            <span>人参</span>
+                            <span class="property-tag">补益类</span>
+                        </div>
+                        <p><strong>性味归经：</strong>甘、微苦，微温。归脾、肺、心经。</p>
+                        <div class="herb-property">
+                            <span class="property-tag">大补元气</span>
+                            <span class="property-tag">补脾益肺</span>
+                            <span class="property-tag">生津安神</span>
+                        </div>
+                        <button class="btn btn-small view-detail" data-herb="ginseng">查看详情</button>
+                    </div>
+                    <div class="herb-detail" id="detail-ginseng">
+                        <h4>人参详解</h4>
+                        <p><strong>功效主治：</strong></p>
+                        <ul>
+                            <li>元气虚脱证：大补元气，复脉固脱，用于气虚欲脱，脉微欲绝的危重症候</li>
+                            <li>肺脾心肾气虚证：补脾益肺，用于肺虚咳喘、脾虚食少、心悸失眠等</li>
+                            <li>热病气虚津伤口渴：生津止渴，用于热伤气津，口渴多汗</li>
+                        </ul>
+                        <p><strong>使用注意：</strong>实证、热证忌用。不宜与藜芦、五灵脂同用。</p>
+                    </div>
+                </div>
+                
+                <!-- 黄芪 -->
+                <div class="herb-item" data-category="tonic">
+                    <div class="herb-image">
+                        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                             alt="黄芪"
+                             onerror="this.onerror=null; this.src='images/herb2.jpg'">
+                    </div>
+                    <div class="herb-info">
+                        <div class="herb-name">
+                            <span>黄芪</span>
+                            <span class="property-tag">补益类</span>
+                        </div>
+                        <p><strong>性味归经：</strong>甘，微温。归脾、肺经。</p>
+                        <div class="herb-property">
+                            <span class="property-tag">补气升阳</span>
+                            <span class="property-tag">固表止汗</span>
+                            <span class="property-tag">利水消肿</span>
+                        </div>
+                        <button class="btn btn-small view-detail" data-herb="huangqi">查看详情</button>
+                    </div>
+                    <div class="herb-detail" id="detail-huangqi">
+                        <h4>黄芪详解</h4>
+                        <p><strong>功效主治：</strong></p>
+                        <ul>
+                            <li>脾胃气虚证：补中益气，用于食少便溏、倦怠乏力</li>
+                            <li>肺气虚证：补益肺气，用于咳喘气短</li>
+                            <li>表虚自汗：固表止汗，用于体虚自汗、易感风寒</li>
+                            <li>气虚水肿：利水消肿，用于气虚水湿停聚的水肿</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 枸杞子 -->
+                <div class="herb-item" data-category="tonic">
+                    <div class="herb-image">
+                        <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                             alt="枸杞子"
+                             onerror="this.onerror=null; this.src='images/herb3.jpg'">
+                    </div>
+                    <div class="herb-info">
+                        <div class="herb-name">
+                            <span>枸杞子</span>
+                            <span class="property-tag">补益类</span>
+                        </div>
+                        <p><strong>性味归经：</strong>甘，平。归肝、肾经。</p>
+                        <div class="herb-property">
+                            <span class="property-tag">滋补肝肾</span>
+                            <span class="property-tag">益精明目</span>
+                            <span class="property-tag">养肝润肺</span>
+                        </div>
+                        <button class="btn btn-small view-detail" data-herb="gouqi">查看详情</button>
+                    </div>
+                    <div class="herb-detail" id="detail-gouqi">
+                        <h4>枸杞子详解</h4>
+                        <p><strong>功效主治：</strong></p>
+                        <ul>
+                            <li>肝肾阴虚证：滋补肝肾，用于腰膝酸软、头晕耳鸣</li>
+                            <li>目暗不明：益精明目，用于视力减退、目暗不明</li>
+                            <li>内热消渴：滋阴润燥，用于阴虚内热、消渴多饮</li>
+                        </ul>
+                        <p><strong>现代研究：</strong>富含枸杞多糖、胡萝卜素、维生素等，具有抗氧化、免疫调节、抗衰老等作用。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 中药配伍禁忌 -->
+        <section class="content-section">
+            <h2>中药配伍与禁忌</h2>
+            
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="tab1">配伍原则</button>
+                    <button class="tab-btn" data-tab="tab2">十八反</button>
+                    <button class="tab-btn" data-tab="tab3">十九畏</button>
+                    <button class="tab-btn" data-tab="tab4">妊娠禁忌</button>
+                </div>
+                
+                <div class="tab-content active" id="tab1">
+                    <h3>中药配伍原则</h3>
+                    <p>中药配伍是根据病情需要和药物性能，有选择地将两种或两种以上的药物配合使用。配伍的目的是：</p>
+                    
+                    <div class="cards-container">
+                        <div class="card">
+                            <div class="card-content">
+                                <h4>相须</h4>
+                                <p>性能功效相类似的药物配合使用，可以增强原有疗效。</p>
+                                <p><strong>例：</strong>石膏配知母，增强清热泻火功效。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-content">
+                                <h4>相使</h4>
+                                <p>性能功效有某种共性的药物配合使用，提高主药疗效。</p>
+                                <p><strong>例：</strong>黄芪配茯苓，提高补气利水功效。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-content">
+                                <h4>相畏</h4>
+                                <p>一种药物的毒副作用能被另一种药物减轻或消除。</p>
+                                <p><strong>例：</strong>生半夏畏生姜，生姜可解半夏毒。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-content">
+                                <h4>相杀</h4>
+                                <p>一种药物能减轻或消除另一种药物的毒副作用。</p>
+                                <p><strong>例：</strong>生姜杀生半夏毒。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="tab2">
+                    <h3>十八反</h3>
+                    <p>十八反是中药配伍禁忌的重要内容，指某些药物合用会产生剧烈的毒副作用或降低药效。</p>
+                    
+                    <div class="highlight">
+                        <p>甘草反甘遂、大戟、海藻、芫花</p>
+                        <p>乌头反贝母、瓜蒌、半夏、白蔹、白及</p>
+                        <p>藜芦反人参、丹参、玄参、沙参、细辛、芍药</p>
+                    </div>
+                    
+                    <p><strong>注意：</strong>十八反是传统用药禁忌，现代研究对其认识不断深入，临床应用需谨慎。</p>
+                </div>
+                
+                <div class="tab-content" id="tab3">
+                    <h3>十九畏</h3>
+                    <p>十九畏指某些药物合用会降低药效或产生不良反应。</p>
+                    
+                    <table class="herb-table">
+                        <thead>
+                            <tr>
+                                <th>药物</th>
+                                <th>相畏药物</th>
+                                <th>可能影响</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>硫黄</td>
+                                <td>朴硝</td>
+                                <td>降低药效</td>
+                            </tr>
+                            <tr>
+                                <td>水银</td>
+                                <td>砒霜</td>
+                                <td>毒性增强</td>
+                            </tr>
+                            <tr>
+                                <td>狼毒</td>
+                                <td>密陀僧</td>
+                                <td>毒性增强</td>
+                            </tr>
+                            <tr>
+                                <td>巴豆</td>
+                                <td>牵牛</td>
+                                <td>药效降低</td>
+                            </tr>
+                            <tr>
+                                <td>丁香</td>
+                                <td>郁金</td>
+                                <td>降低药效</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="tab-content" id="tab4">
+                    <h3>妊娠用药禁忌</h3>
+                    <p>某些药物具有损害胎元以致堕胎的副作用，应作为妊娠禁忌药物。</p>
+                    
+                    <div class="cards-container">
+                        <div class="card">
+                            <div class="card-content">
+                                <h4>禁用药物</h4>
+                                <p>毒性较强或药性猛烈的药物，绝对不能使用。</p>
+                                <p><strong>例：</strong>巴豆、牵牛、大戟、斑蝥、水蛭、虻虫、麝香、三棱、莪术等。</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-content">
+                                <h4>慎用药物</h4>
+                                <p>通经祛瘀、行气破滞、辛热滑利之品，慎用。</p>
+                                <p><strong>例：</strong>桃仁、红花、大黄、枳实、附子、干姜、肉桂等。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 常用方剂 -->
+        <section class="prescription-section">
+            <h2 class="page-title">常用养生方剂</h2>
+            
+            <div class="prescription-grid">
+                <div class="prescription-card">
+                    <h3>四君子汤</h3>
+                    <p><strong>组成：</strong>人参、白术、茯苓、甘草</p>
+                    <p><strong>功效：</strong>益气健脾</p>
+                    <p><strong>主治：</strong>脾胃气虚证。面色萎白，语声低微，气短乏力，食少便溏。</p>
+                </div>
+                
+                <div class="prescription-card">
+                    <h3>六味地黄丸</h3>
+                    <p><strong>组成：</strong>熟地黄、山茱萸、山药、泽泻、牡丹皮、茯苓</p>
+                    <p><strong>功效：</strong>滋补肝肾</p>
+                    <p><strong>主治：</strong>肝肾阴虚证。腰膝酸软，头晕目眩，耳鸣耳聋，盗汗遗精。</p>
+                </div>
+                
+                <div class="prescription-card">
+                    <h3>桂枝汤</h3>
+                    <p><strong>组成：</strong>桂枝、芍药、甘草、生姜、大枣</p>
+                    <p><strong>功效：</strong>解肌发表，调和营卫</p>
+                    <p><strong>主治：</strong>外感风寒表虚证。头痛发热，汗出恶风，鼻鸣干呕。</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 煎煮方法 -->
+        <section class="content-section">
+            <h2>中药煎煮方法</h2>
+            
+            <div class="herb-detail-grid">
+                <div class="herb-description">
+                    <h3>正确煎煮步骤</h3>
+                    
+                    <div class="highlight">
+                        <p><strong>重要提示：</strong>正确的煎煮方法直接影响药效，请务必按规范操作。</p>
+                    </div>
+                    
+                    <h4>1. 煎药器具</h4>
+                    <p>最好使用砂锅、陶锅或不锈钢锅，忌用铁锅、铝锅、铜锅，以免发生化学反应影响药效。</p>
+                    
+                    <h4>2. 加水量</h4>
+                    <p>一般药物加水浸过药面2-3厘米。解表药、清热药宜用武火煎煮，补益药宜用文火慢煎。</p>
+                    
+                    <h4>3. 煎煮时间</h4>
+                    <ul>
+                        <li>解表药、清热药：头煎10-15分钟，二煎10分钟</li>
+                        <li>一般药：头煎20-25分钟，二煎15-20分钟</li>
+                        <li>滋补药：头煎30-40分钟，二煎20-25分钟</li>
+                    </ul>
+                    
+                    <h4>4. 特殊煎法</h4>
+                    <p>某些药物需要特殊处理：</p>
+                    <ul>
+                        <li><strong>先煎：</strong>矿物、贝壳类及毒性药物应先煎30分钟</li>
+                        <li><strong>后下：</strong>气味芳香的药物应在其他药煎好前5-10分钟放入</li>
+                        <li><strong>包煎：</strong>花粉、细小种子及有绒毛的药物应用纱布包好</li>
+                        <li><strong>烊化：</strong>胶类药物应单独加热烊化后兑入药液</li>
+                    </ul>
+                </div>
+                
+                <div class="herb-quick-info">
+                    <h3>煎药注意事项</h3>
+                    
+                    <div class="info-item">
+                        <div class="info-label">煎前浸泡</div>
+                        <div class="info-value">30-60分钟</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">煎药火候</div>
+                        <div class="info-value">先武后文</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">煎煮次数</div>
+                        <div class="info-value">一般2-3次</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">合并药液</div>
+                        <div class="info-value">分2-3次服用</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">服药时间</div>
+                        <div class="info-value">饭前或饭后1小时</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">药渣处理</div>
+                        <div class="info-value">可用来泡脚</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 总结 -->
+        <section class="content-section">
+            <div class="quote">
+                <p>"用药如用兵，在精不在多。"</p>
+            </div>
+            
+            <h2>中草药使用的现代意义</h2>
+            <p>中草药作为中国传统医学的重要组成部分，在现代社会仍然具有重要的医疗价值和养生意义：</p>
+            
+            <ul>
+                <li><strong>自然疗法优势：</strong>中草药多为天然药物，副作用相对较小</li>
+                <li><strong>整体调节作用：</strong>多成分、多靶点调节，符合现代系统医学理念</li>
+                <li><strong>预防保健功能：</strong>注重"治未病"，在养生保健方面具有独特优势</li>
+                <li><strong>个性化治疗：</strong>强调辨证论治，实现个体化精准医疗</li>
+                <li><strong>中西医结合：</strong>与现代医学结合，发挥协同增效作用</li>
+            </ul>
+            
+            <p>随着现代科学技术的发展，中草药的研究和应用不断深入，为新药开发、疾病治疗和养生保健提供了丰富的资源和思路。</p>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="acupuncture.html" class="btn">学习经络穴位知识 →</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <p><i class="fas fa-seedling"></i> 中草药专题 | 百草精华与自然疗愈</p>
+            <p>了解传统草药智慧，掌握健康养生之道</p>
+            <p class="copyright">© 2026 中医养生 | 期末作业 | 草药专题</p>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+            
+            // 关闭菜单当点击链接
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.classList.remove('active');
+                });
+            });
+            
+            // 当前页面高亮
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // 草药筛选功能
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const herbItems = document.querySelectorAll('.herb-item');
+            const tableRows = document.querySelectorAll('.herb-table tbody tr');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有active类
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // 添加当前按钮active类
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // 筛选草药卡片
+                    herbItems.forEach(item => {
+                        if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                    
+                    // 筛选表格行
+                    tableRows.forEach(row => {
+                        if (filter === 'all' || row.getAttribute('data-category') === filter) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // 查看详情功能
+            document.querySelectorAll('.view-detail').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const herbId = this.getAttribute('data-herb');
+                    const detailDiv = document.getElementById(`detail-${herbId}`);
+                    
+                    // 关闭其他详情
+                    document.querySelectorAll('.herb-detail').forEach(d => {
+                        if (d !== detailDiv) d.classList.remove('active');
+                    });
+                    
+                    // 切换当前详情
+                    detailDiv.classList.toggle('active');
+                    
+                    // 滚动到详情
+                    if (detailDiv.classList.contains('active')) {
+                        detailDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                });
+            });
+            
+            // 标签页切换
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // 移除所有active类
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // 添加当前active类
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // 动画效果
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // 观察所有卡片
+            document.querySelectorAll('.card, .herb-item, .prescription-card').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
